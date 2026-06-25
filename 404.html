@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | Relay Dept</title>
+  <meta name="description" content="This page doesn't exist. Try the home page or blog.">
+  <meta property="og:title" content="404 — Page Not Found | Relay Dept">
+  <meta property="og:description" content="This page doesn't exist. Try the home page or blog.">
+  <meta property="og:image" content="og-image.svg">
+  <meta property="og:url" content="https://relaydept.com/404.html">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5F0EB;
+      --cream-dark: #E8E0D8;
+      --cream-deep: #D9CFC5;
+      --white: #FFFFFF;
+      --burgundy: #6B1D2A;
+      --burgundy-mid: #8A2E3D;
+      --charcoal: #1A1A1A;
+      --text: #2C2C2C;
+      --text-dim: #6B6B6B;
+      --text-faint: #9A9A9A;
+      --border-strong: rgba(44, 44, 44, 0.18);
+      --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--cream-deep) 1px, transparent 1px),
+        linear-gradient(90deg, var(--cream-deep) 1px, transparent 1px);
+      background-size: 64px 64px;
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    svg.noise-filter { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; pointer-events: none; z-index: 0; opacity: 0.028; }
+    .page-wrap { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+
+    /* ─── Nav ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.4rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(245, 240, 235, 0.94);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+    }
+
+    .logo-accent {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--burgundy);
+      letter-spacing: 0.04em;
+      vertical-align: 1px;
+    }
+
+    .logo span { color: var(--burgundy); font-weight: 400; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--burgundy); }
+    .nav-links a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; border-radius: 2px; }
+
+    /* ─── 404 Content ─── */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 10rem 3rem 6rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .code-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--burgundy);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .code-label::before {
+      content: '//';
+      font-weight: 500;
+    }
+
+    .content h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--charcoal);
+      margin-bottom: 1.5rem;
+    }
+
+    .content p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      max-width: 380px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      background: var(--burgundy);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--charcoal);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+    }
+
+    .home-link:hover::before { transform: translateX(0); }
+    .home-link:hover { color: var(--cream); }
+    .home-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+    .home-link span { position: relative; z-index: 1; }
+
+    /* ASCII decoration */
+    .ascii-border {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--cream-deep);
+      letter-spacing: 0;
+      margin-top: 3rem;
+      overflow: hidden;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    /* ─── Footer ─── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--burgundy); }
+    .footer-links a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; border-radius: 2px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .content { padding: 7rem 1.5rem 4rem; }
+      footer {
+        flex-direction: column;
+        gap: 1.2rem;
+        text-align: center;
+        padding: 1.5rem;
+      }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--cream-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--cream-deep); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--burgundy); }
+    ::selection { background: var(--burgundy); color: var(--cream); }
+  </style>
+</head>
+<body>
+
+  <svg class="noise-filter" aria-hidden="true">
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noise)"/>
+  </svg>
+
+  <div class="page-wrap">
+
+  <!-- Nav -->
+  <nav>
+    <a href="index.html" class="logo" style="text-decoration:none">Relay<span class="logo-accent">[_]</span><span> Dept</span></a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="index.html#services">Services</a></li>
+        <li><a href="index.html#process">Process</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="resources.html">Resources</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 404 Content -->
+  <div class="content">
+    <p class="code-label">Error 404</p>
+    <h1>Page not found.</h1>
+    <p>This page doesn't exist or has been moved. Try heading back to the home page.</p>
+    <a href="index.html" class="home-link"><span>← Home</span></a>
+    <p class="ascii-border" aria-hidden="true">▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸▸</p>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Relay Dept — All rights reserved</p>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="blog.html">Blog</a>
+      <a href="resources.html">Resources</a>
+    </div>
+  </footer>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F5F0EB"/>
+  <!-- Subtle grid -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#D9CFC5" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="8" height="630" fill="#6B1D2A"/>
+  <!-- Content -->
+  <text x="80" y="280" font-family="Georgia, serif" font-size="120" font-weight="bold" fill="#6B1D2A">R</text>
+  <text x="80" y="380" font-family="Arial, sans-serif" font-size="28" font-weight="300" letter-spacing="8" fill="#1A1A1A">RELAY DEPT</text>
+  <rect x="80" y="400" width="60" height="2" fill="#6B1D2A"/>
+  <text x="80" y="440" font-family="Arial, sans-serif" font-size="18" fill="#6B6B6B">Autonomous AI Infrastructure</text>
+</svg>
