@@ -6,4 +6,4 @@ This repository was the first AI-ops marketing site. Its contents moved to `arch
 
 The repo now holds Relay's brand tokens, paper stylesheet, and print templates. Binder stays separate. KB stays the home for spec, prose templates, entity work, and client records.
 
-Open: the production-company site (`site/`), local font embedding, and the GitHub cleanup of `lunar-park-sites/relaydept` and `relay-dept-products`.
+Open: the production-company site (`site/`), local font embedding, and the GitHub cleanup. Order matters for the site: build `site/` here, point the Vercel project (currently `Lunar-Park/lunar-park-sites`, root `relaydept`) at it, confirm relaydept.com serves the new site, then archive the old folder. `relay-dept-products` has no deployment and can be archived any time.
