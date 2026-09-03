@@ -1,0 +1,57 @@
+/* Relay Dept paper. US Letter. Spec: Lunar-Park-KB/relay/brand/document-brand.md */
+@import url('../../brand/tokens.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@page { size: Letter; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--rd-paper); color: var(--rd-ink); font-family: var(--rd-body); font-size: 10pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.page { width: 8.5in; min-height: 11in; display: flex; flex-direction: column; page-break-after: always; position: relative; }
+.page:last-child { page-break-after: auto; }
+.mono { font-family: var(--rd-mono); letter-spacing: var(--rd-track-mono); text-transform: uppercase; }
+
+/* status strip */
+.status { display: flex; justify-content: space-between; align-items: center; gap: 10pt; padding: 8pt 0.66in; border-bottom: 1px solid var(--rd-rule); font-size: 6.6pt; color: var(--rd-ink-2); }
+.status .l { display: flex; gap: 9pt; white-space: nowrap; }
+.status .br { color: var(--rd-red); }
+.status .div { color: var(--rd-rule); }
+.status .int { color: var(--rd-red); font-weight: 500; display: flex; align-items: center; gap: 5pt; }
+.status .int::before { content: ''; width: 5.5pt; height: 5.5pt; border-radius: 50%; background: var(--rd-red); }
+
+/* title block */
+.title { padding: 0.36in 0.66in 0.2in; }
+.title .eb { font-size: 7.4pt; color: var(--rd-ink-2); margin-bottom: 9pt; }
+.title h1 { font-family: var(--rd-head); font-weight: 600; font-size: 23.5pt; line-height: 1.05; margin: 0; letter-spacing: -0.015em; text-wrap: balance; }
+
+/* spec strip */
+.strip { margin: 0 0.66in 16pt; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rd-ink); border-bottom: 1px solid var(--rd-rule); }
+.strip > div { padding: 7pt 9pt 7pt 0; border-right: 1px solid var(--rd-rule); margin-right: 9pt; }
+.strip > div:last-child { border-right: 0; margin-right: 0; }
+.strip .k { font-size: 6.8pt; color: var(--rd-ink-2); margin-bottom: 3pt; }
+.strip .v { font-size: 9pt; line-height: 1.35; }
+
+/* sections */
+.body { flex: 1; padding: 0 0.66in; }
+.sec + .sec { border-top: 1px solid var(--rd-rule); margin-top: 11pt; }
+h2 { font-family: var(--rd-head); font-weight: 600; font-size: 12pt; margin: 11pt 0 5.5pt; display: flex; align-items: center; gap: 5.5pt; }
+h2::before { content: ''; width: 4.2pt; height: 4.2pt; background: var(--rd-red); flex: none; }
+p { margin: 0 0 7pt; max-width: 68ch; }
+
+/* tables */
+table { width: 100%; border-collapse: collapse; font-size: 9pt; line-height: 1.35; }
+th, td { text-align: left; vertical-align: top; padding: 5pt 6pt 5pt 0; }
+th:last-child, td:last-child { padding-right: 0; }
+th { font-family: var(--rd-mono); font-weight: 500; font-size: 7pt; letter-spacing: var(--rd-track-mono); text-transform: uppercase; color: var(--rd-ink-2); border-bottom: 1px solid var(--rd-ink); padding-top: 0; }
+td { border-bottom: 1px solid var(--rd-rule); }
+tr:last-child td { border-bottom: 0; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+
+/* gate */
+.gate { position: relative; border: 1px solid var(--rd-ink); padding: 9pt 10pt 9pt 11pt; margin-top: 15pt; font-size: 8.6pt; break-inside: avoid; }
+.gate::before { content: ''; position: absolute; left: -1px; top: -1px; width: 6pt; height: 6pt; background: var(--rd-red); }
+.gate .k { font-size: 7.4pt; color: var(--rd-ink-2); margin-bottom: 3pt; }
+
+/* footer */
+.foot { margin: 0 0.66in; padding: 8pt 0 0.3in; border-top: 1px solid var(--rd-rule); display: flex; justify-content: space-between; align-items: baseline; font-size: 7.2pt; color: var(--rd-ink-2); }
+.word { font-family: var(--rd-head); font-weight: 600; letter-spacing: var(--rd-track-wordmark); text-transform: uppercase; color: var(--rd-ink); font-size: 10.5pt; }
+.word .b { font-family: var(--rd-mono); color: var(--rd-red); font-size: 0.7em; vertical-align: 0.14em; font-weight: 400; }

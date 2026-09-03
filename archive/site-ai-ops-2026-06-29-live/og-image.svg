@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0D0D0D"/>
+  <!-- Subtle grid -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C23B4A" stroke-width="0.5" opacity="0.12"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="8" height="630" fill="#C23B4A"/>
+  <!-- Status row -->
+  <text x="80" y="90" font-family="'JetBrains Mono','SF Mono',monospace" font-size="20" letter-spacing="4" fill="#8A8680">// RELAY.SYS — AUTONOMOUS AI INFRASTRUCTURE</text>
+  <!-- Mark -->
+  <text x="76" y="330" font-family="'Space Grotesk',Georgia,serif" font-size="150" font-weight="500" fill="#E8E4DF">Relay<tspan fill="#C23B4A" font-weight="300"> Dept</tspan></text>
+  <rect x="80" y="370" width="72" height="3" fill="#C23B4A"/>
+  <!-- Tagline -->
+  <text x="80" y="430" font-family="Inter,Arial,sans-serif" font-size="34" font-weight="300" fill="#E8E4DF">We build systems that <tspan font-style="italic" fill="#C23B4A">think for you</tspan></text>
+  <text x="80" y="478" font-family="'JetBrains Mono','SF Mono',monospace" font-size="22" letter-spacing="3" fill="#5A5854">// agents that remember, coordinate, and execute</text>
+  <!-- Footer mono -->
+  <text x="80" y="572" font-family="'JetBrains Mono','SF Mono',monospace" font-size="20" letter-spacing="3" fill="#5A5854">RELAYDEPT.COM</text>
+  <text x="1120" y="572" text-anchor="end" font-family="'JetBrains Mono','SF Mono',monospace" font-size="20" letter-spacing="3" fill="#5A5854">▸▸▸</text>
+</svg>

@@ -1,0 +1,23 @@
+HOST: (00:00) Welcome back to the show everybody. Um, today I'm here with, uh, Maya Chen, who runs a, a small product studio. Maya, thanks for coming on.
+
+MAYA: (00:12) Yeah, thanks for having me, you know, I'm excited to be here.
+
+HOST: (00:18) So basically, like, I wanted to start with this idea you tweeted about, that, um, "most teams ship features nobody asked for." Can you, kind of, unpack that?
+
+MAYA: (00:34) Yeah so, I mean, the core thing is, teams fall in love with building. Right? Building feels productive. But, like, talking to customers feels slow and kind of uncomfortable. So what happens is, you end up with a roadmap that's basically a list of things the team thought were cool, not things customers actually need.
+
+HOST: (01:05) Right, right. So how do you, sort of, fix that?
+
+MAYA: (01:10) The thing that changed everything for us was a rule: no feature gets built until three real customers describe the problem in their own words. Not the solution, the problem. Because, you know, customers will ask for a faster horse. Our job is to hear the problem underneath.
+
+HOST: (01:42) That's a great line. So, um, what happened when you started doing that?
+
+MAYA: (01:48) Honestly, we killed like 40% of our backlog in the first month. And, uh, the stuff that survived, we shipped it faster because we actually understood why it mattered. Our activation rate went up, I think it was, like, 30-something percent over the quarter.
+
+HOST: (02:15) Wow. Okay, last question. If someone's listening and they want to start tomorrow, what's the, like, one thing?
+
+MAYA: (02:24) Call three customers this week. Don't pitch, don't demo. Just ask them what their hardest day looks like. That's it. You'll learn more in three calls than three months of guessing.
+
+HOST: (02:40) Love it. Maya, thanks so much. Where can people find you?
+
+MAYA: (02:44) Yeah, just on Twitter, I'm pretty active there. Thanks again.

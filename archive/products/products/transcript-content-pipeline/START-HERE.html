@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transcript → Content Pipeline — Setup Guide</title>
+  <meta name="description" content="Turn one recording transcript into on-brand blog posts, threads, show notes, video summaries, and editor-ready timecode files.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1A2B4A;
+      --surface: #0F1D33;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --text: #FFFFFF;
+      --text-dim: rgba(255, 255, 255, 0.7);
+      --text-faint: rgba(255, 255, 255, 0.4);
+      --accent: #60A5FA;
+      --accent-bright: #93C5FD;
+      --accent-glow: rgba(96, 165, 250, 0.3);
+      --mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.6;
+      -webkit-font-smoothing: antialiased; position: relative;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+      pointer-events: none; z-index: 0;
+    }
+    .wrap { position: relative; z-index: 1; }
+    .container { max-width: 980px; margin: 0 auto; padding: 0 1.75rem; }
+
+    /* Top bar */
+    .status-bar {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.6rem 1.75rem; background: rgba(26,43,74,0.95);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim);
+    }
+    .status-left { display: flex; align-items: center; gap: 0.6rem; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+    .status-right { color: var(--text-faint); }
+    .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+    .logo span { color: var(--accent); font-weight: 400; }
+
+    /* Hero */
+    .hero { padding: 6rem 0 4rem; border-bottom: 1px solid var(--border); }
+    .eyebrow {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .eyebrow::before { content: '//'; font-weight: 500; }
+    h1 {
+      font-family: 'Space Grotesk', sans-serif; font-weight: 300;
+      font-size: clamp(2.4rem, 6vw, 4.2rem); line-height: 1.05;
+      letter-spacing: -0.03em; max-width: 760px;
+    }
+    h1 em { font-style: italic; color: var(--accent-bright); font-weight: 400; }
+    .hero-sub { margin-top: 1.75rem; font-size: 1.05rem; color: var(--text-dim); max-width: 620px; }
+
+    /* Sections */
+    section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+    .section-label {
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+      margin-bottom: 2.25rem; display: flex; align-items: center; gap: 0.75rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border-strong);
+    }
+    h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 400; font-size: 1.6rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    p { color: var(--text-dim); }
+    p + p { margin-top: 0.85rem; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .step { background: var(--surface); padding: 2rem 2.25rem; display: grid; grid-template-columns: 56px 1fr; gap: 1.5rem; align-items: start; }
+    .step-num { font-family: var(--mono); font-size: 1.4rem; font-weight: 500; color: var(--accent); line-height: 1; }
+    .step h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 500; margin-bottom: 0.6rem; }
+    .step p { font-size: 0.9rem; line-height: 1.7; }
+    .step ul { margin-top: 0.75rem; padding-left: 1.1rem; color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; }
+    .step li { margin-bottom: 0.35rem; }
+    code { font-family: var(--mono); font-size: 0.82rem; background: rgba(96,165,250,0.15); padding: 0.12rem 0.4rem; border-radius: 3px; color: var(--accent-bright); }
+    pre { font-family: var(--mono); font-size: 0.8rem; background: rgba(0,0,0,0.28); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.25rem; margin-top: 1rem; overflow-x: auto; color: var(--text); line-height: 1.7; }
+    pre .c { color: var(--text-faint); }
+    pre .f { color: var(--accent-bright); }
+
+    /* Cards grid */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .card { background: var(--surface); padding: 1.6rem 1.75rem; }
+    .card h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 1rem; margin-bottom: 0.4rem; }
+    .card p { font-size: 0.86rem; line-height: 1.65; }
+    .tag { display: inline-block; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border-strong); border-radius: 4px; padding: 0.1rem 0.45rem; margin-bottom: 0.75rem; }
+
+    /* Callout */
+    .callout { border: 1px solid var(--border-strong); border-left: 3px solid var(--accent); border-radius: 8px; background: rgba(96,165,250,0.06); padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
+    .callout strong { color: var(--accent-bright); }
+    .callout p { font-size: 0.9rem; }
+
+    /* Editor table */
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
+    th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); }
+    th { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+    td { color: var(--text-dim); }
+    td code { font-size: 0.78rem; }
+
+    footer { padding: 3rem 0; text-align: center; color: var(--text-faint); font-size: 0.82rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 1fr; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="status-bar">
+    <div class="status-left"><span class="status-dot"></span> SKILL · v1.0 · READY</div>
+    <div class="status-right">RelayDept</div>
+  </div>
+
+  <header class="hero">
+    <div class="container">
+      <div class="eyebrow">Setup Guide</div>
+      <h1>One recording.<br><em>Every</em> piece of content.</h1>
+      <p class="hero-sub">A Claude skill that turns a recording transcript into on-brand blog posts, social threads, show notes, and video summaries — plus editor-ready timecode files so cutting the source is fast. This guide gets you running in about five minutes.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="section-label">What's inside</div>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">Skill</span>
+          <h4>The skill (.zip)</h4>
+          <p><code>transcript-content-pipeline-skill.zip</code> — the file you upload to Claude. Contains the workflow, format specs, and helper scripts.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Brand</span>
+          <h4>Brand profile builder</h4>
+          <p>Point Claude at a folder of your brand docs once; it builds a reusable profile so every output sounds like you.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Editor</span>
+          <h4>Timecode export</h4>
+          <p>FCPXML (Resolve/FCP), FCP7 XML (Premiere markers), EDL (clip selects), and CSV — built from the exact moments used.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Examples</span>
+          <h4>Sample files</h4>
+          <p>A sample transcript, a <code>.vtt</code> caption file, and a brand-docs folder so you can try everything before using your own material.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-label">Setup — 4 steps</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Unzip this package</h3>
+            <p>You should see the setup guide you're reading, the <code>examples/</code> folder, and the skill file: <code>transcript-content-pipeline-skill.zip</code>. Leave that inner zip <em>zipped</em> — you'll hand it to Claude as-is.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Upload the skill to Claude</h3>
+            <p>In Claude (Cowork, desktop, or web), open <strong>Settings → Capabilities → Skills</strong> and choose <strong>Upload skill</strong>. Select <code>transcript-content-pipeline-skill.zip</code>.</p>
+            <ul>
+              <li>Enable <strong>code execution</strong> in that workspace so the transcript cleaner and timecode exporter can run.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Build your brand profile (once)</h3>
+            <p>Upload a few real brand docs — a style guide, a couple of published posts, your about page — then say:</p>
+            <pre>Use the transcript-content-pipeline skill to
+build our brand profile from these docs.</pre>
+            <p>Review the generated <code>brand-profile.md</code>, tweak anything, and <strong>save it</strong> — it's the source of truth for every output. Re-attach it in future sessions.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Turn a recording into content</h3>
+            <p>Upload or paste a transcript (with timestamps if you want the editor export), then ask for what you need:</p>
+            <pre>Using our brand profile, turn this transcript
+into a blog post and an X thread, with editor
+timecode files. Frame rate is 30.</pre>
+            <p>New to it? Try the included <code>examples/sample-transcript.txt</code> first.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-label">Editor handoff</div>
+      <h2>Files that drop straight into your timeline</h2>
+      <p>As Claude picks quotes and segments, it records their source timecodes and generates files you can import — so you jump to the moment instead of scrubbing.</p>
+      <table>
+        <tr><th>File</th><th>Editor</th><th>What it does</th></tr>
+        <tr><td><code>edit.fcpxml</code></td><td>Resolve, Final Cut</td><td>Timeline markers at each key moment</td></tr>
+        <tr><td><code>edit.xml</code></td><td>Premiere Pro</td><td>Sequence markers (FCP7 XML) — File → Import</td></tr>
+        <tr><td><code>edit.edl</code></td><td>Premiere + Resolve</td><td>An assembly of the selected clips (selects)</td></tr>
+        <tr><td><code>edit.csv</code></td><td>Spreadsheet / Resolve</td><td>Plain reference / marker import</td></tr>
+      </table>
+      <div class="callout">
+        <p><strong>Premiere tip:</strong> import <code>edit.xml</code> (File → Import). It creates a sequence with markers — paste them onto an adjustment layer to drop them into your working timeline.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-label">Good to know</div>
+      <div class="grid">
+        <div class="card">
+          <h4>Timecodes need timestamps</h4>
+          <p>The editor export only works if your transcript has timestamps. Most tools export them; <code>.vtt</code>/<code>.srt</code> caption files work great and the skill cleans them automatically.</p>
+        </div>
+        <div class="card">
+          <h4>Set your frame rate</h4>
+          <p>Tell Claude the footage frame rate (24, 25, 29.97, 30, 60…). It defaults to 30; the wrong rate makes timecodes drift.</p>
+        </div>
+        <div class="card">
+          <h4>It won't make things up</h4>
+          <p>Every quote and stat traces back to the transcript. Missing details (dates, links, titles) come back as placeholders for you to fill.</p>
+        </div>
+        <div class="card">
+          <h4>Brand first, always</h4>
+          <p>If no brand profile is loaded, the skill asks for your brand docs before writing — so you never get generic, off-voice output.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>Built by <a href="https://relaydept.com">RelayDept</a> — tools for people who build things.</p>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

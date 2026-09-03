@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting… | Relay Dept</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root { --bg:#0D0D0D; --text:#E8E4DF; --text-dim:#8A8680; --accent:#C23B4A; --mono:'JetBrains Mono','SF Mono',monospace; }
+    * { margin:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:var(--mono); display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center; padding:2rem; }
+    a { color:var(--accent); }
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+  <div>
+    <p style="color:var(--text-dim);font-size:.7rem;letter-spacing:.15em;margin-bottom:1rem">// RELOCATED</p>
+    <p style="margin-bottom:1rem">This post has moved.</p>
+    <p><a href="blog.html">← Go to Blog</a></p>
+  </div>
+<<<<<<< Updated upstream
+=======
+
+  <div class="page-wrap">
+
+  <!-- Nav -->
+  <nav>
+    <a href="/" class="logo" style="text-decoration:none">Relay<span class="logo-accent">[_]</span><span> Dept</span></a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#process">Process</a></li>
+        <li><a href="/blog" class="active">Blog</a></li>
+        <li><a href="/resources">Resources</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Post Header -->
+  <section class="post-header reveal">
+    <div class="post-header-inner">
+      <div class="post-meta">
+        <span class="post-date" id="post-date"></span>
+        <span class="post-tag" id="post-tag"></span>
+      </div>
+      <h1 id="post-title"></h1>
+      <p class="post-read-time" id="post-read-time"></p>
+    </div>
+  </section>
+
+  <!-- Post Body -->
+  <section class="post-body">
+    <div class="post-body-inner">
+      <div id="post-content"></div>
+
+      <!-- Share -->
+      <div class="share-bar">
+        <span class="share-label">// Share</span>
+        <a href="#" id="share-twitter" class="share-btn" target="_blank" rel="noopener">Twitter</a>
+        <a href="#" id="share-linkedin" class="share-btn" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+
+      <!-- Related -->
+      <div class="related">
+        <h3>// Related</h3>
+        <div class="related-list" id="related-posts"></div>
+      </div>
+
+      <a href="/blog" class="back-link">← Back to Blog</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Relay Dept — All rights reserved</p>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+      <a href="/resources">Resources</a>
+    </div>
+  </footer>
+
+  </div>
+
+>>>>>>> Stashed changes
+  <script>
+    // Legacy redirect: /post.html?slug=<slug> -> /blog/<slug>.html
+    // (kept as a client-side fallback; Vercel also issues a 301 — see vercel.json)
+    (function () {
+      var slug = new URLSearchParams(window.location.search).get('slug');
+      if (slug && /^[a-z0-9-]+$/.test(slug)) {
+        window.location.replace('blog/' + slug + '.html');
+      } else {
+        window.location.replace('blog.html');
+      }
+<<<<<<< Updated upstream
+    })();
+=======
+    };
+
+    const ALL_SLUGS = Object.keys(POSTS);
+
+    function getSlug() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('slug') || '';
+    }
+
+    function renderPost(slug) {
+      const post = POSTS[slug];
+      if (!post) {
+        document.querySelector('.page-wrap').innerHTML = `
+          <nav>
+            <a href="/" class="logo" style="text-decoration:none">Relay<span class="logo-accent">[_]</span><span> Dept</span></a>
+          </nav>
+          <div style="padding:10rem 3rem;text-align:center">
+            <p style="font-family:var(--mono);font-size:0.65rem;color:var(--accent);letter-spacing:.15em;margin-bottom:1.5rem">// ERROR 404</p>
+            <h1 style="font-family:'Space Grotesk',sans-serif;font-size:2.5rem;font-weight:300;color:var(--text);margin-bottom:1rem">Post not found</h1>
+            <a href="/blog" style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);text-decoration:none">← Back to Blog</a>
+          </div>`;
+        return;
+      }
+
+      document.getElementById('post-date').textContent = post.date;
+      document.getElementById('post-tag').textContent = post.tag;
+      document.getElementById('post-title').textContent = post.title;
+      document.getElementById('post-read-time').textContent = '// ' + post.readTime;
+      document.getElementById('post-content').innerHTML = post.content;
+
+      document.title = post.title + ' | Relay Dept';
+      document.querySelector('meta[name="description"]').content = post.excerpt;
+      document.querySelector('meta[property="og:title"]').content = post.title + ' | Relay Dept';
+      document.querySelector('meta[property="og:description"]').content = post.excerpt;
+      document.querySelector('meta[property="og:url"]').content = 'https://relaydept.com/' + slug;
+
+      const encodedTitle = encodeURIComponent(post.title + ' | Relay Dept');
+      const encodedUrl = encodeURIComponent('https://relaydept.com/' + slug);
+      document.getElementById('share-twitter').href = 'https://twitter.com/intent/tweet?text=' + encodedTitle + '&url=' + encodedUrl;
+      document.getElementById('share-linkedin').href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodedUrl;
+
+      const related = ALL_SLUGS.filter(s => s !== slug).slice(0, 3).map(s => {
+        const p = POSTS[s];
+        return '<a href="/post?slug=' + s + '" class="related-item"><div class="related-item-title">' + p.title + '</div><div class="related-item-meta">' + p.date + ' · ' + p.readTime + '</div></a>';
+      }).join('');
+      document.getElementById('related-posts').innerHTML = related;
+
+      // Scroll reveal
+      document.querySelectorAll('.reveal').forEach(el => {
+        const io = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        io.observe(el);
+      });
+    }
+
+    // Status bar date
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+    document.getElementById('status-date').textContent = dateStr;
+
+    const slug = getSlug();
+    renderPost(slug);
+>>>>>>> Stashed changes
+  </script>
+</body>
+</html>

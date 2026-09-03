@@ -1,0 +1,12 @@
+{
+  "title": "Maya Chen Interview",
+  "fps": 30,
+  "media": "maya-chen-interview.mov",
+  "segments": [
+    {"start": "00:18", "end": "00:34", "name": "Hook: features nobody asked for", "note": "blog intro + thread post 1"},
+    {"start": "00:34", "end": "01:05", "name": "Why teams default to building", "note": "blog section 1"},
+    {"start": "01:10", "end": "01:42", "name": "The 3-customer rule", "note": "thread post 3 + pull quote"},
+    {"start": "01:48", "name": "Killed 40% of backlog (stat)", "note": "marker — verify number on screen"},
+    {"start": "02:24", "end": "02:40", "name": "Call three customers this week", "note": "closer / CTA clip"}
+  ]
+}

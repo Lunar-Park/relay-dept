@@ -1,0 +1,18 @@
+/* Relay Dept tokens. From the live site, translated to paper. Spec: Lunar-Park-KB/relay/brand/document-brand.md */
+:root {
+  --rd-paper: #F2EEE8;
+  --rd-cover: #0D0D0D;
+  --rd-ink: #0D0D0D;
+  --rd-ink-2: #5A5854;
+  --rd-ink-3: #8A8680;
+  --rd-rule: #CFC9C1;
+  --rd-band: #E8E4DF;
+  --rd-red: #C23B4A;
+  --rd-red-dark: #8A2B36;
+
+  --rd-head: 'Space Grotesk', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --rd-body: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --rd-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace;
+  --rd-track-mono: 0.06em;
+  --rd-track-wordmark: 0.08em;
+}

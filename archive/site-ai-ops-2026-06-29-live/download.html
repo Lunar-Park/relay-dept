@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download | Relay Dept</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D0D0D;
+      --surface: #141414;
+      --border: #2A2A2A;
+      --text: #E8E4DF;
+      --text-dim: #8A8680;
+      --accent: #C23B4A;
+      --accent-dark: #8A2B36;
+      --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .download-page {
+      text-align: center;
+      padding: 2rem;
+      max-width: 500px;
+    }
+    .download-page h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+    .download-page h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .download-page .sub {
+      font-size: 1rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .download-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.25rem 2rem;
+      background: var(--accent);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background 0.2s;
+      margin-bottom: 1rem;
+      width: 100%;
+      cursor: pointer;
+      border: none;
+    }
+    .download-btn:hover {
+      background: var(--accent-dark);
+    }
+    .download-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .download-btn .icon {
+      font-size: 1.1rem;
+    }
+    .help {
+      margin-top: 2rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .help a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .help a:hover {
+      text-decoration: underline;
+    }
+    .status {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 1rem;
+      min-height: 1.2em;
+    }
+    .hidden { display: none; }
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+  <div class="download-page">
+    <h1>Your download is <em>ready</em></h1>
+    <p class="sub">Thanks for your purchase. Click below to download your file.</p>
+
+    <div id="content" class="hidden">
+      <button class="download-btn" id="btn-download" disabled>
+        <span class="icon">↓</span> <span id="btn-label">Downloading...</span>
+      </button>
+      <p class="status" id="status">Verifying payment...</p>
+      <p class="help">Having issues? <a href="mailto:hello@relaydept.com">Contact us</a></p>
+    </div>
+
+    <div id="error" class="hidden">
+      <p class="sub">Invalid or expired download link. Please <a href="mailto:hello@relaydept.com" style="color:var(--accent)">contact us</a> with your receipt.</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    const product = params.get('product');
+
+    const LABELS = {
+      transcript: 'Download Transcript Pipeline',
+      obsidian: 'Download Obsidian KB Kit',
+    };
+
+    if (sessionId && product && LABELS[product]) {
+      document.getElementById('content').classList.remove('hidden');
+      document.getElementById('btn-label').textContent = LABELS[product];
+
+      // Verify session and enable download
+      fetch(`/api/download?session_id=${encodeURIComponent(sessionId)}&product=${product}`, { method: 'HEAD' })
+        .then(res => {
+          if (res.ok) {
+            document.getElementById('btn-download').disabled = false;
+            document.getElementById('status').textContent = 'Payment verified — ready to download';
+          } else {
+            document.getElementById('status').textContent = 'Payment not found — check your receipt';
+          }
+        })
+        .catch(() => {
+          document.getElementById('status').textContent = 'Could not verify payment';
+        });
+
+      document.getElementById('btn-download').addEventListener('click', function() {
+        window.location.href = `/api/download?session_id=${encodeURIComponent(sessionId)}&product=${product}`;
+      });
+    } else {
+      document.getElementById('error').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>

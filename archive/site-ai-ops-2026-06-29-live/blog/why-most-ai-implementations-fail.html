@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Most AI Implementations Fail | Relay Dept</title>
+  <meta name="description" content="The gap between a working demo and a production system is wider than most teams expect. Here are the three failure modes that sink AI projects.">
+  <meta property="og:title" content="Why Most AI Implementations Fail | Relay Dept">
+  <meta property="og:description" content="The gap between a working demo and a production system is wider than most teams expect. Here are the three failure modes that sink AI projects.">
+  <meta property="og:image" content="https://relaydept.com/og-image.png">
+  <meta property="og:url" content="https://relaydept.com/blog/why-most-ai-implementations-fail.html">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0D0D0D;
+      --surface: #141414;
+      --border: #2A2A2A;
+      --border-strong: #3A3A3A;
+      --text: #E8E4DF;
+      --text-dim: #8A8680;
+      --text-faint: #5A5854;
+      --accent: #C23B4A;
+      --accent-dark: #8A2B36;
+      --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(194, 59, 74, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(194, 59, 74, 0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrap { position: relative; z-index: 1; }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 101;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.625rem 3rem;
+      background: rgba(13, 13, 13, 0.95);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--text-dim);
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .status-divider { color: var(--border); }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--text-dim);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ─── Scroll reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── Nav ─── */
+    nav {
+      position: fixed;
+      top: 32px; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(13, 13, 13, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-accent {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      vertical-align: 1px;
+    }
+
+    .logo span { color: var(--accent); font-weight: 400; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active { color: var(--accent); }
+    .nav-links a.active::after { width: 100%; }
+
+    /* ─── Post Header ─── */
+    .post-header {
+      padding: 8rem 3rem 4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .post-header-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .post-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      letter-spacing: 0.06em;
+    }
+
+    .post-tag {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .post-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .post-read-time {
+      margin-top: 1.5rem;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Post Body ─── */
+    .post-body {
+      padding: 5rem 3rem 8rem;
+    }
+
+    .post-body-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .post-body p {
+      font-size: 1.03rem;
+      color: var(--text);
+      margin-bottom: 1.75rem;
+      line-height: 1.85;
+    }
+
+    .post-body h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 500;
+      color: var(--text);
+      margin: 3.5rem 0 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .post-body h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text);
+      margin: 3rem 0 1rem;
+    }
+
+    .post-body ul, .post-body ol {
+      margin: 1.5rem 0 2rem 1.5rem;
+    }
+
+    .post-body li {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.65rem;
+      line-height: 1.75;
+    }
+
+    .post-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 0.25rem 0 0.25rem 1.5rem;
+      margin: 2.5rem 0;
+      font-size: 1.08rem;
+      font-style: italic;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+
+    /* ─── Share ─── */
+    .share-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin: 4rem 0;
+    }
+
+    .share-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-strong);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .share-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── Related ─── */
+    .related {
+      margin-top: 4rem;
+    }
+
+    .related h3 {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .related-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .related-item {
+      display: block;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+
+    .related-item:hover { opacity: 0.6; }
+
+    .related-item-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .related-item-meta {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+    }
+
+    /* ─── Back Link ─── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 3rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover { color: var(--accent); }
+
+    /* ─── Footer ─── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .status-bar { padding: 0.5rem 1.5rem; }
+      nav { top: 28px; padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .post-header { padding: 7rem 1.5rem 3rem; }
+      .post-body { padding: 3rem 1.5rem 5rem; }
+      .post-meta { flex-wrap: wrap; gap: 0.75rem; }
+      footer {
+        flex-direction: column;
+        gap: 1.2rem;
+        text-align: center;
+        padding: 1.5rem;
+      }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    ::selection { background: var(--accent); color: var(--text); }
+  
+    /* ─── Mobile Nav ─── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      width: 32px; height: 32px;
+      padding: 0; margin-left: 1.25rem;
+      background: none; border: none;
+      cursor: pointer;
+    }
+    .nav-toggle-bar {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--text);
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease, background 0.2s;
+      transform-origin: center;
+    }
+    .nav-toggle:hover .nav-toggle-bar { background: var(--accent); }
+    .nav-toggle.open .nav-toggle-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); background: var(--accent); }
+    .nav-toggle.open .nav-toggle-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-toggle.open .nav-toggle-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background: var(--accent); }
+
+    .mobile-menu {
+      position: fixed; inset: 0;
+      z-index: 99;
+      background: rgba(13, 13, 13, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.25rem;
+      padding: 7rem 1.5rem 3rem;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu.open { opacity: 1; visibility: visible; }
+    .mobile-menu .menu-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.75rem;
+      opacity: 0.85;
+    }
+    .mobile-menu a {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 7vw, 2.4rem);
+      font-weight: 400;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      padding: 0.6rem 0;
+      transition: color 0.2s, transform 0.2s;
+    }
+    .mobile-menu a:hover,
+    .mobile-menu a:focus-visible { color: var(--accent); transform: translateX(4px); outline: none; }
+    body.no-scroll { overflow: hidden; }
+
+    @media (max-width: 768px) {
+      .nav-toggle { display: flex; }
+    }
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="status-item">
+        <span class="status-dot"></span>
+        relay.sys
+      </span>
+      <span class="status-divider">/</span>
+      <span>blog</span>
+    </div>
+    <div class="status-right">
+      <span id="status-date"></span>
+      <span class="status-divider">/</span>
+      <span class="cursor-blink"></span>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+
+  <!-- Nav -->
+  <nav>
+    <a href="../index.html" class="logo" style="text-decoration:none">Relay<span class="logo-accent">[_]</span><span> Dept</span></a>
+    <div class="nav-right">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </button>
+      <ul class="nav-links">
+        <li><a href="../index.html#services">Services</a></li>
+        <li><a href="../index.html#process">Process</a></li>
+        <li><a href="../blog.html" class="active">Blog</a></li>
+        <li><a href="../resources.html">Resources</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <p class="menu-eyebrow">// Navigate</p>
+      <a href="../index.html#services">Services</a>
+      <a href="../index.html#process">Process</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../resources.html">Resources</a>
+  </div>
+
+  <!-- Post Header -->
+  <section class="post-header reveal">
+    <div class="post-header-inner">
+      <div class="post-meta">
+        <span class="post-date">June 23, 2026</span>
+        <span class="post-tag">AI Ops</span>
+      </div>
+      <h1>Why Most AI Implementations Fail</h1>
+      <p class="post-read-time">// 7 min read</p>
+    </div>
+  </section>
+
+  <!-- Post Body -->
+  <section class="post-body">
+    <div class="post-body-inner">
+
+      <p>Every week, another company announces they've integrated AI into their workflow. And every week, another team quietly sunsets the pilot six months later. The demo worked. The stakeholders were impressed. But it didn't survive contact with reality.</p>
+
+      <p>This isn't a technology problem. The models are good enough. The failure mode is almost always the same: teams treat AI deployment like software deployment, when it's actually more like hiring. You can't just ship a person to production and expect them to figure it out.</p>
+
+      <h2>The Demonstration Problem</h2>
+
+      <p>AI demos are theater. They show the best-case behavior — curated inputs, ideal conditions, the model operating at peak capability. What they don't show:</p>
+
+      <ul>
+        <li>What happens when the model encounters an edge case it wasn't trained for</li>
+        <li>How the system handles ambiguity in real user requests</li>
+        <li>What "failure" looks like when the AI gets something wrong</li>
+        <li>How the system degrades over time as the world changes around it</li>
+      </ul>
+
+      <p>A demo is a lie told in the present tense. It promises capability without accounting for context, maintenance, or the thousand small ways real work differs from synthetic scenarios.</p>
+
+      <h2>The Three Failure Modes</h2>
+
+      <p>After running AI systems in production for years, we've seen the same three failure patterns emerge, regardless of industry or use case.</p>
+
+      <h3>1. No Memory Architecture</h3>
+
+      <p>The model processes each request as if it's never seen you before. No context about your business, your preferences, your past mistakes. Every conversation starts from scratch. Users quickly abandon systems that force them to repeat context the AI should already know.</p>
+
+      <blockquote>The most useful AI systems aren't the smartest. They're the ones that remember.</blockquote>
+
+      <p>Persistent memory — across sessions, across users, across time — is what separates a tool from an assistant. Without it, you're just running the same generic model over and over, burning compute on context you already had.</p>
+
+      <h3>2. No Observability</h3>
+
+      <p>When the system makes a decision, can you explain why? When it fails, do you know what went wrong? When it's drifting from your intended behavior, do you have any way to tell?</p>
+
+      <p>Most teams discover their AI is failing only when customers complain. By then, the damage is done. Production AI systems need the same operational rigor you'd apply to any critical infrastructure: logs, monitoring, alerting, and a clear chain of accountability for failures.</p>
+
+      <h3>3. No Evolution Mechanism</h3>
+
+      <p>The world changes. Your product changes. Your users' needs change. If your AI system can't adapt — if it stays frozen in the state it was deployed in — it will become increasingly irrelevant, and increasingly wrong, as time passes.</p>
+
+      <p>Static AI systems are a technical debt problem disguised as a feature. The organizations that win with AI are the ones that treat it as an ongoing operation, not a one-time deployment.</p>
+
+      <h2>What Actually Works</h2>
+
+      <p>The teams that successfully run AI in production share a few practices that have nothing to do with which model they chose or how much fine-tuning they did.</p>
+
+      <ul>
+        <li><strong>They design for failure first.</strong> Every AI system will fail in some way. They plan for that from day one, building in human review loops, graceful degradation, and clear escalation paths.</li>
+        <li><strong>They treat deployment as the beginning.</strong> The work after launch — monitoring, tuning, retraining, replacing — is where the real investment lives.</li>
+        <li><strong>They match autonomy to consequence.</strong> Low-stakes tasks get full autonomy. High-stakes ones keep humans in the loop, no matter how good the model seems.</li>
+        <li><strong>They measure what matters.</strong> Not just accuracy metrics — business outcomes. Did this system actually reduce support tickets? Did it speed up the workflow? Did it make customers happier?</li>
+      </ul>
+
+      <p>AI operations isn't a phase you complete. It's a capability you build and maintain, like any other critical system your business depends on.</p>
+
+      <p>If you're evaluating an AI implementation — or trying to figure out why yours didn't stick — the question to ask isn't "is the model good enough?" It's "do we have the infrastructure, the processes, and the culture to run this thing reliably?"</p>
+
+      <p>That answer is usually where the gap lives.</p>
+
+      <!-- Share -->
+      <div class="share-bar">
+        <span class="share-label">// Share</span>
+        <a href="https://twitter.com/intent/tweet?text=Why%20Most%20AI%20Implementations%20Fail%20%7C%20Relay%20Dept&url=https%3A%2F%2Frelaydept.com%2Fblog%2Fwhy-most-ai-implementations-fail.html" class="share-btn" target="_blank" rel="noopener">Twitter</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Frelaydept.com%2Fblog%2Fwhy-most-ai-implementations-fail.html" class="share-btn" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+
+      <!-- Related -->
+      <div class="related">
+        <h3>// Related</h3>
+        <div class="related-list">
+          <a href="what-is-ai-operations.html" class="related-item">
+            <div class="related-item-title">What Is AI Operations?</div>
+            <div class="related-item-meta">June 16, 2026 · 7 min read</div>
+          </a>
+          <a href="building-agents-that-remember.html" class="related-item">
+            <div class="related-item-title">Building Agents That Remember</div>
+            <div class="related-item-meta">June 20, 2026 · 8 min read</div>
+          </a>
+          <a href="multi-agent-orchestration-production.html" class="related-item">
+            <div class="related-item-title">Multi-Agent Orchestration: Lessons from Production</div>
+            <div class="related-item-meta">June 10, 2026 · 9 min read</div>
+          </a>
+        </div>
+      </div>
+
+      <a href="../blog.html" class="back-link">← Back to Blog</a>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2026 Relay Dept — All rights reserved</p>
+    <div class="footer-links">
+      <a href="../index.html">Home</a>
+      <a href="../blog.html">Blog</a>
+      <a href="../resources.html">Resources</a>
+    </div>
+  </footer>
+
+  </div>
+
+  <script>
+    // Status bar date
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+    document.getElementById('status-date').textContent = dateStr;
+
+    // Scroll reveal
+    document.querySelectorAll('.reveal').forEach(el => {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+      io.observe(el);
+    });
+  </script>
+
+
+  <script>
+    // Mobile nav toggle
+    (function () {
+      var toggle = document.getElementById('nav-toggle');
+      var menu = document.getElementById('mobile-menu');
+      if (!toggle || !menu) return;
+      function setNav(open) {
+        toggle.classList.toggle('open', open);
+        menu.classList.toggle('open', open);
+        document.body.classList.toggle('no-scroll', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+      }
+      toggle.addEventListener('click', function () { setNav(!toggle.classList.contains('open')); });
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { setNav(false); });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && toggle.classList.contains('open')) setNav(false);
+      });
+    })();
+  </script>
+
+</body>
+</html>
