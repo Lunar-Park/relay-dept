@@ -59,7 +59,12 @@ tr:last-child td { border-bottom: 0; }
 /* ---------- multi-page documents ---------- */
 .fixed-status { position: fixed; top: 0; left: 0; right: 0; z-index: 1; background: var(--rd-paper); }
 .fixed-foot { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1; margin: 0; padding: 8pt 0.66in 0.3in; background: var(--rd-paper); }
-.doc { padding: 0.62in 0.66in 0.85in; }
+.doc { padding: 0 0.66in; }
+/* The sheet table reserves the strip and footer zones on every page: Chromium repeats thead and tfoot. */
+table.sheet { width: 100%; border-collapse: collapse; }
+table.sheet > thead > tr > td, table.sheet > tfoot > tr > td, table.sheet > tbody > tr > td { padding: 0; border: 0; vertical-align: top; }
+.head-space { height: 0.62in; }
+.foot-space { height: 0.85in; }
 .doc .title { padding: 0.1in 0 0.18in; }
 .doc .strip { margin: 0 0 14pt; }
 .doc .sec { break-inside: auto; }
@@ -70,7 +75,7 @@ tr:last-child td { border-bottom: 0; }
 .cover .frame::before { content: ''; position: absolute; left: 0.22in; top: 0.22in; width: 7pt; height: 7pt; background: var(--rd-red); }
 .cover .status-line { font-size: 7.2pt; color: #8A8680; }
 .cover .status-line .br { color: var(--rd-red); }
-.cover h1 { font-family: var(--rd-head); font-weight: 600; font-size: 30pt; line-height: 1.1; margin: 0 0 12pt; letter-spacing: -0.015em; max-width: 14ch; text-wrap: balance; }
+.cover h1 { font-family: var(--rd-head); font-weight: 600; font-size: 30pt; line-height: 1.1; margin: 0 0 12pt; letter-spacing: -0.015em; max-width: 20ch; text-wrap: balance; }
 .cover .sub { font-size: 7.6pt; color: #8A8680; line-height: 1.8; }
 .cover .word { color: #E8E4DF; }
 

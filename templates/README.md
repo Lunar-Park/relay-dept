@@ -12,4 +12,4 @@ Fonts come from Google Fonts for now; embed local files before anything renders 
 
 Done: `production-treatment.html` (single page), `estimate.html` (dark cover, flowing pages, money tables; figures are examples from the superseded LA model). To do: SOW, capability sheet, delivery record, call sheet.
 
-Multi-page documents use a fixed status strip and footer that Chromium repeats on every page, and a `.cover` section that paints over them. Page numbers cannot be set from CSS in Chromium; Binder adds them through its header and footer templates.
+Multi-page documents use a fixed status strip and footer that Chromium repeats on every page, and a `.cover` section that paints over them. Flowing content sits inside `table.sheet`, whose repeating `thead` and `tfoot` rows reserve the header and footer zones so text never runs under them; `@page` margins stay at zero so the cover and the band can bleed. Page numbers cannot be set from CSS in Chromium; Binder adds them through its header and footer templates.
