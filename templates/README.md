@@ -10,4 +10,6 @@
 
 Fonts come from Google Fonts for now; embed local files before anything renders offline in Binder.
 
-Done: `production-treatment.html`. To do, in the order they will be needed: estimate, SOW, capability sheet, delivery record, call sheet.
+Done: `production-treatment.html` (single page), `estimate.html` (dark cover, flowing pages, money tables; figures are examples from the superseded LA model). To do: SOW, capability sheet, delivery record, call sheet.
+
+Multi-page documents use a fixed status strip and footer that Chromium repeats on every page, and a `.cover` section that paints over them. Page numbers cannot be set from CSS in Chromium; Binder adds them through its header and footer templates.

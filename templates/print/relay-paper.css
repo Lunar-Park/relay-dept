@@ -55,3 +55,36 @@ tr:last-child td { border-bottom: 0; }
 .foot { margin: 0 0.66in; padding: 8pt 0 0.3in; border-top: 1px solid var(--rd-rule); display: flex; justify-content: space-between; align-items: baseline; font-size: 7.2pt; color: var(--rd-ink-2); }
 .word { font-family: var(--rd-head); font-weight: 600; letter-spacing: var(--rd-track-wordmark); text-transform: uppercase; color: var(--rd-ink); font-size: 10.5pt; }
 .word .b { font-family: var(--rd-mono); color: var(--rd-red); font-size: 0.7em; vertical-align: 0.14em; font-weight: 400; }
+
+/* ---------- multi-page documents ---------- */
+.fixed-status { position: fixed; top: 0; left: 0; right: 0; z-index: 1; background: var(--rd-paper); }
+.fixed-foot { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1; margin: 0; padding: 8pt 0.66in 0.3in; background: var(--rd-paper); }
+.doc { padding: 0.62in 0.66in 0.85in; }
+.doc .title { padding: 0.1in 0 0.18in; }
+.doc .strip { margin: 0 0 14pt; }
+.doc .sec { break-inside: auto; }
+
+/* cover: client-facing documents only */
+.cover { position: relative; z-index: 2; background: var(--rd-cover); color: #E8E4DF; height: 11in; padding: 0.5in; }
+.cover .frame { border: 1px solid #3A3A3A; height: 100%; position: relative; padding: 0.55in 0.6in; display: flex; flex-direction: column; justify-content: space-between; }
+.cover .frame::before { content: ''; position: absolute; left: 0.22in; top: 0.22in; width: 7pt; height: 7pt; background: var(--rd-red); }
+.cover .status-line { font-size: 7.2pt; color: #8A8680; }
+.cover .status-line .br { color: var(--rd-red); }
+.cover h1 { font-family: var(--rd-head); font-weight: 600; font-size: 30pt; line-height: 1.1; margin: 0 0 12pt; letter-spacing: -0.015em; max-width: 14ch; text-wrap: balance; }
+.cover .sub { font-size: 7.6pt; color: #8A8680; line-height: 1.8; }
+.cover .word { color: #E8E4DF; }
+
+/* money tables */
+table.money td.num, table.money th.num { font-family: var(--rd-mono); font-size: 8.4pt; letter-spacing: 0; text-transform: none; }
+table.money tr.sub td { font-weight: 500; border-top: 1px solid var(--rd-rule); }
+table.money tr.total td { font-weight: 600; border-top: 1px solid var(--rd-ink); border-bottom: 0; padding-top: 6pt; }
+table.money td.code { font-family: var(--rd-mono); font-size: 7.6pt; color: var(--rd-ink-2); width: 8%; }
+.summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--rd-ink); border-bottom: 1px solid var(--rd-rule); margin: 0 0 14pt; }
+.summary > div { padding: 8pt 9pt 8pt 0; border-right: 1px solid var(--rd-rule); margin-right: 9pt; }
+.summary > div:last-child { border-right: 0; margin-right: 0; }
+.summary .k { font-size: 6.8pt; color: var(--rd-ink-2); margin-bottom: 3pt; }
+.summary .v { font-family: var(--rd-mono); font-size: 13pt; font-variant-numeric: tabular-nums; }
+.summary .v small { font-size: 7pt; color: var(--rd-ink-2); margin-left: 4pt; }
+ul.plain { margin: 0; padding-left: 1.1em; } ul.plain li { margin-bottom: 3pt; }
+.sig { display: grid; grid-template-columns: 1fr 1fr; gap: 24pt; margin-top: 18pt; }
+.sig > div { border-top: 1px solid var(--rd-ink); padding-top: 5pt; font-size: 7.4pt; color: var(--rd-ink-2); }
